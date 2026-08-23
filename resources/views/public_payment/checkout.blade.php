@@ -3,7 +3,7 @@
 @section('title', 'Pay Invoice ' . $invoice->invoice_number . ' via Razorpay')
 
 @section('content')
-    <div class="row justify-content-center nd">
+    <div class="row justify-content-center">
         <div class="col-12 col-md-8 col-lg-6">
             <div class="checkout-card">
                 <!-- Brand Header -->

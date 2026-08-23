@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-6">
+        <div class="col-12 col-md-10 col-lg-8">
             <div class="checkout-card">
                 <!-- Brand Header -->
                 <div class="brand-header text-center"
@@ -29,28 +29,114 @@
                         </div>
                     </div>
 
-                    <!-- Account Summary Box -->
-                    <div class="bg-light p-3 rounded-3 mb-4">
-                        <div class="d-flex justify-content-between mb-1 fs-14">
-                            <span class="text-muted">Client:</span>
-                            <strong class="text-dark">{{ $invoice->client->company_name }}</strong>
+                    <!-- Account & Client Summary Box -->
+                    <div class="bg-light p-3 rounded-3 mb-4 border">
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <small class="text-muted text-uppercase fw-semibold fs-11 d-block">Billed To</small>
+                                <strong class="text-dark fs-15">{{ $invoice->client->company_name }}</strong>
+                                @if($invoice->client->contact_person)
+                                    <div class="fs-13 text-muted">Attn: {{ $invoice->client->contact_person }}</div>
+                                @endif
+                                @if($invoice->client->email)
+                                    <div class="fs-13 text-muted"><i class="fa-regular fa-envelope me-1"></i>{{ $invoice->client->email }}</div>
+                                @endif
+                                @if($invoice->client->phone)
+                                    <div class="fs-13 text-muted"><i class="fa-solid fa-phone me-1"></i>{{ $invoice->client->phone }}</div>
+                                @endif
+                            </div>
+                            <div class="col-6 text-end">
+                                <small class="text-muted text-uppercase fw-semibold fs-11 d-block">Invoice Status</small>
+                                <span class="badge bg-warning-subtle text-warning border border-warning px-3 py-1 fs-13 mt-1">Payment Required</span>
+                            </div>
                         </div>
-                        <div class="d-flex justify-content-between mb-1 fs-14">
-                            <span class="text-muted">Invoice Total:</span>
-                            <span>{{ $invoice->currency_symbol }}{{ number_format($invoice->grand_total, 2) }}</span>
-                        </div>
-                        @if($invoice->paid_amount > 0)
-                            <div class="d-flex justify-content-between mb-1 fs-14 text-success">
-                                <span>Already Paid:</span>
-                                <span>-{{ $invoice->currency_symbol }}{{ number_format($invoice->paid_amount, 2) }}</span>
+
+                        <!-- Itemized Breakdown Table -->
+                        @if($invoice->items && $invoice->items->count() > 0)
+                            <div class="table-responsive mb-3">
+                                <table class="table table-sm table-bordered bg-white align-middle fs-13 mb-0">
+                                    <thead class="table-light text-muted">
+                                        <tr>
+                                            <th>Description</th>
+                                            <th class="text-center" style="width: 60px;">Qty</th>
+                                            <th class="text-center" style="width: 70px;">Unit</th>
+                                            <th class="text-end" style="width: 90px;">Rate</th>
+                                            <th class="text-end" style="width: 100px;">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($invoice->items as $item)
+                                            <tr>
+                                                <td>
+                                                    <div class="fw-semibold text-dark">{{ $item->item_name }}</div>
+                                                    @if($item->description)
+                                                        <small class="text-muted d-block fs-12">{{ $item->description }}</small>
+                                                    @endif
+                                                </td>
+                                                <td class="text-center">{{ number_format($item->quantity, 2) }}</td>
+                                                <td class="text-center text-muted">{{ $item->unit ?: '-' }}</td>
+                                                <td class="text-end">{{ $invoice->currency_symbol }}{{ number_format($item->unit_price, 2) }}</td>
+                                                <td class="text-end fw-semibold">{{ $invoice->currency_symbol }}{{ number_format($item->total_amount, 2) }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         @endif
-                        <hr class="my-2">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="fw-bold fs-16 text-dark">Amount Due Now:</span>
-                            <span
-                                class="fw-bold fs-22 text-primary">{{ $invoice->currency_symbol }}{{ number_format($invoice->balance_due, 2) }}</span>
-                        </div>
+
+                        <!-- Financial Totals -->
+                        <div class="bg-white p-3 rounded-2 border">
+                            <div class="d-flex justify-content-between mb-1 fs-14">
+                                        <span class="text-muted">Subtotal:</span>
+                                        <span class="fw-semibold">{{ $invoice->currency_symbol }}{{ number_format($invoice->subtotal, 2) }}</span>
+                                    </div>
+
+                                    @if($invoice->discount_amount > 0)
+                                        <div class="d-flex justify-content-between mb-1 fs-14 text-danger">
+                                            <span>Discount:</span>
+                                            <span>-{{ $invoice->currency_symbol }}{{ number_format($invoice->discount_amount, 2) }}</span>
+                                        </div>
+                                    @endif
+
+                                    @foreach($invoice->taxes as $itax)
+                                        <div class="d-flex justify-content-between mb-1 fs-14 text-muted">
+                                            <span>{{ $itax->tax_name }} ({{ number_format($itax->tax_rate, 2) }}%):</span>
+                                            <span>+{{ $invoice->currency_symbol }}{{ number_format($itax->tax_amount, 2) }}</span>
+                                        </div>
+                                    @endforeach
+
+                                    @if($invoice->additional_charges > 0)
+                                        <div class="d-flex justify-content-between mb-1 fs-14 text-muted">
+                                            <span>Additional Charges:</span>
+                                            <span>+{{ $invoice->currency_symbol }}{{ number_format($invoice->additional_charges, 2) }}</span>
+                                        </div>
+                                    @endif
+
+                                    @if($invoice->round_off != 0)
+                                        <div class="d-flex justify-content-between mb-1 fs-14 text-muted">
+                                            <span>Round Off:</span>
+                                            <span>{{ $invoice->currency_symbol }}{{ number_format($invoice->round_off, 2) }}</span>
+                                        </div>
+                                    @endif
+
+                                    <div class="d-flex justify-content-between mb-1 fs-14 pt-1 border-top">
+                                        <span class="fw-bold text-dark">Grand Total:</span>
+                                        <strong class="text-dark">{{ $invoice->currency_symbol }}{{ number_format($invoice->grand_total, 2) }}</strong>
+                                    </div>
+                                    
+                                    @if($invoice->paid_amount > 0)
+                                        <div class="d-flex justify-content-between mb-1 fs-14 text-success">
+                                            <span>Already Paid:</span>
+                                            <span>-{{ $invoice->currency_symbol }}{{ number_format($invoice->paid_amount, 2) }}</span>
+                                        </div>
+                                    @endif
+                                    
+                                    <hr class="my-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold fs-15 text-dark">Amount Due Now:</span>
+                                        <span class="fw-bold fs-20 text-primary">{{ $invoice->currency_symbol }}{{ number_format($invoice->balance_due, 2) }}</span>
+                                    </div>
+                                </div>
                     </div>
 
                     <!-- Razorpay Exclusive Payment Box -->

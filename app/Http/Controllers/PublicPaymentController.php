@@ -27,7 +27,7 @@ class PublicPaymentController extends Controller
             return view('public_payment.expired');
         }
 
-        $invoice = $link->invoice->load(['client', 'items']);
+        $invoice = $link->invoice->load(['client', 'items', 'taxes']);
         $company = CompanySetting::getSettings();
 
         if ($invoice->balance_due <= 0 || $invoice->status === 'Paid') {

@@ -39,7 +39,7 @@
                         <select name="project_id" id="project_id" class="form-select">
                             <option value="">-- Optional Project --</option>
                             @foreach($projects as $p)
-                                <option value="{{ $p->id }}" {{ old('project_id') == $p->id ? 'selected' : '' }}>{{ $p->project_name }}</option>
+                                <option value="{{ $p->id }}" data-client-id="{{ $p->client_id }}" {{ old('project_id') == $p->id ? 'selected' : '' }}>{{ $p->project_name }} ({{ $p->project_id }})</option>
                             @endforeach
                         </select>
                     </div>
@@ -265,14 +265,68 @@
 
         let itemIndex = 1;
 
-        // Auto client currency fill
-        document.getElementById('client_id').addEventListener('change', function () {
-            const selected = this.options[this.selectedIndex];
-            const curr = selected.getAttribute('data-currency');
-            if (curr) {
-                document.getElementById('currency').value = curr;
+        const clientSelect = document.getElementById('client_id');
+        const projectSelect = document.getElementById('project_id');
+
+        // Store initial project list from server
+        const allProjects = Array.from(projectSelect.querySelectorAll('option')).map(opt => ({
+            value: opt.value,
+            text: opt.textContent.trim(),
+            clientId: opt.getAttribute('data-client-id')
+        }));
+
+        function updateProjectOptions(preserveSelection = true) {
+            const selectedClientId = clientSelect.value;
+            const currentSelectedValue = preserveSelection ? projectSelect.value : '';
+
+            projectSelect.innerHTML = '';
+
+            const defaultOpt = document.createElement('option');
+            defaultOpt.value = '';
+            defaultOpt.textContent = '-- Optional Project --';
+            projectSelect.appendChild(defaultOpt);
+
+            let matchFound = false;
+
+            allProjects.forEach(prj => {
+                if (!prj.value) return;
+
+                if (selectedClientId && prj.clientId == selectedClientId) {
+                    const opt = document.createElement('option');
+                    opt.value = prj.value;
+                    opt.textContent = prj.text;
+                    opt.setAttribute('data-client-id', prj.clientId);
+                    if (prj.value == currentSelectedValue) {
+                        opt.selected = true;
+                        matchFound = true;
+                    }
+                    projectSelect.appendChild(opt);
+                }
+            });
+
+            if (!matchFound) {
+                projectSelect.value = '';
             }
+        }
+
+        // Auto client currency & payment terms fill + project filter
+        clientSelect.addEventListener('change', function () {
+            const selected = this.options[this.selectedIndex];
+            if (selected) {
+                const curr = selected.getAttribute('data-currency');
+                const terms = selected.getAttribute('data-terms');
+                if (curr && document.getElementById('currency')) {
+                    document.getElementById('currency').value = curr;
+                }
+                if (terms && document.getElementById('payment_terms')) {
+                    document.getElementById('payment_terms').value = terms;
+                }
+            }
+            updateProjectOptions(false);
         });
+
+        // Initialize project list for selected client
+        updateProjectOptions(true);
 
         // Add line item row
         addItemBtn.addEventListener('click', function () {

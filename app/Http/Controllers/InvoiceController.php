@@ -107,7 +107,7 @@ class InvoiceController extends Controller
 
         $selectedClientId = $request->get('client_id');
         $selectedClient = $selectedClientId ? Client::find($selectedClientId) : null;
-        $projects = $selectedClient ? $selectedClient->projects : collect();
+        $projects = Project::orderBy('project_name')->get();
 
         return view('invoices.create', compact(
             'suggestedNumber',
@@ -178,7 +178,7 @@ class InvoiceController extends Controller
     {
         $invoice->load(['items', 'taxes']);
         $clients = Client::orderBy('company_name')->get();
-        $projects = Project::where('client_id', $invoice->client_id)->get();
+        $projects = Project::orderBy('project_name')->get();
         $services = Service::where('status', 'active')->orderBy('service_name')->get();
         $taxes = Tax::where('is_active', true)->get();
         $currencies = Currency::all();

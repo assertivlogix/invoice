@@ -52,20 +52,23 @@
             @endif
 
             <!-- Company Header -->
-            <div class="row border-bottom pb-4 mb-4">
-                <div class="col-6">
-                    <h3 class="fw-bold text-primary mb-1">{{ $company->company_name }}</h3>
-                    <div class="text-muted fs-14">
+            <div class="row align-items-center border-bottom pb-4 mb-4">
+                <div class="col-4">
+                    <h5 class="fw-bold text-primary mb-1">{{ $company->company_name }}</h5>
+                    <div class="text-muted fs-13">
                         {{ $company->address }}<br>
                         {{ $company->city }}, {{ $company->state }} {{ $company->zip_code }}, {{ $company->country }}<br>
                         Email: {{ $company->email }} | Phone: {{ $company->phone }}<br>
                         @if($company->tax_number) Tax ID: {{ $company->tax_number }} @endif
                     </div>
                 </div>
-                <div class="col-6 text-end">
+                <div class="col-4 text-center">
+                    <img src="{{ asset('images/logo.svg') }}" alt="{{ $company->company_name }}" style="max-height: 65px; max-width: 100%;">
+                </div>
+                <div class="col-4 text-end">
                     <h2 class="fw-bold text-dark mb-1">INVOICE</h2>
                     <div class="fs-15 fw-bold text-primary mb-2">{{ $invoice->invoice_number }}</div>
-                    <div class="fs-14 text-muted">
+                    <div class="fs-13 text-muted">
                         <strong>Invoice Date:</strong> {{ $invoice->invoice_date->format('M d, Y') }}<br>
                         <strong>Due Date:</strong> {{ $invoice->due_date->format('M d, Y') }}<br>
                         <strong>Payment Terms:</strong> {{ $invoice->payment_terms }}<br>
@@ -126,7 +129,7 @@
             <!-- Totals & Calculations Breakdown -->
             <div class="row mb-4">
                 <div class="col-6">
-                    @if($company->bank_name)
+                    @if($company->bank_name && $invoice->status !== 'Paid')
                     <div class="p-3 bg-light rounded-3 fs-13">
                         <h6 class="fw-bold mb-2 text-dark"><i class="fa-solid fa-building-columns text-primary me-1"></i> Bank Payment Details</h6>
                         <div><strong>Bank Name:</strong> {{ $company->bank_name }}</div>

@@ -7,11 +7,11 @@
         <div class="col-12 col-md-10 col-lg-8">
             <div class="checkout-card">
                 <!-- Brand Header -->
-                <div class="brand-header text-center"
+                <div class="brand-header text-center py-3 px-4"
                     style="background: linear-gradient(135deg, #072654 0%, #0c4a6e 100%);">
-                    <h4 class="fw-bold mb-1 text-white"><i class="fa-solid fa-file-invoice-dollar me-2"></i>
-                        {{ $company->company_name }}</h4>
-                    <small class="text-light opacity-75">Secure Razorpay Payment Portal</small>
+                    <img src="{{ asset('images/logo.svg') }}" alt="{{ $company->company_name }}" style="height: 44px; max-width: 240px; filter: brightness(0) invert(1);" class="mb-1">
+                    <h5 class="fw-bold text-white mb-0 text-uppercase tracking-wider fs-16">{{ $company->company_name }}</h5>
+                    <small class="text-light opacity-75 d-block fs-12">Secure Razorpay Payment Portal</small>
                 </div>
 
                 <div class="p-4">

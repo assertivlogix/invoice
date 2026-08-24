@@ -42,6 +42,7 @@ Route::middleware(['auth'])->group(function () {
     // Clients
     Route::resource('clients', ClientController::class);
     Route::get('/clients/{client}/statement', [ClientController::class, 'statement'])->name('clients.statement');
+    Route::get('/clients/{client}/statement/pdf', [ClientController::class, 'downloadStatementPdf'])->name('clients.statement_pdf');
 
     // Projects
     Route::resource('projects', ProjectController::class);

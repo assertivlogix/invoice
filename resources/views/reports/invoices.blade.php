@@ -9,14 +9,28 @@
         <a href="{{ route('reports.index') }}" class="text-decoration-none text-muted"><i class="fa-solid fa-arrow-left me-1"></i> Reports Dashboard</a>
         <h4 class="fw-bold mt-2">Invoice Financial Report</h4>
     </div>
-    <a href="{{ route('reports.invoices', array_merge(request()->all(), ['export' => 'csv'])) }}" class="btn btn-outline-success">
-        <i class="fa-solid fa-file-csv me-1"></i> Export CSV
-    </a>
+    <div class="d-flex gap-2">
+        <a href="{{ route('reports.invoices', array_merge(request()->all(), ['export' => 'pdf'])) }}" class="btn btn-outline-danger">
+            <i class="fa-solid fa-file-pdf me-1"></i> Export PDF
+        </a>
+        <a href="{{ route('reports.invoices', array_merge(request()->all(), ['export' => 'csv'])) }}" class="btn btn-outline-success">
+            <i class="fa-solid fa-file-csv me-1"></i> Export CSV
+        </a>
+    </div>
 </div>
 
 <!-- Filters -->
 <div class="card-custom p-3 mb-4">
     <form action="{{ route('reports.invoices') }}" method="GET" class="row g-3">
+        <div class="col-md-3">
+            <label class="form-label fs-13 fw-semibold text-primary">Financial Year (FY)</label>
+            <select name="financial_year" class="form-select">
+                <option value="">-- All Financial Years --</option>
+                @foreach($financialYears as $fyKey => $fyName)
+                    <option value="{{ $fyKey }}" {{ request('financial_year') == $fyKey ? 'selected' : '' }}>{{ $fyName }}</option>
+                @endforeach
+            </select>
+        </div>
         <div class="col-md-3">
             <label class="form-label fs-13 text-muted">Client</label>
             <select name="client_id" class="form-select">
@@ -26,7 +40,7 @@
                 @endforeach
             </select>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <label class="form-label fs-13 text-muted">Status</label>
             <select name="status" class="form-select">
                 <option value="">-- All Statuses --</option>
@@ -38,16 +52,15 @@
             </select>
         </div>
         <div class="col-md-2">
-            <label class="form-label fs-13 text-muted">From Date</label>
-            <input type="date" name="date_from" class="form-control" value="{{ request('date_from') }}">
-        </div>
-        <div class="col-md-2">
-            <label class="form-label fs-13 text-muted">To Date</label>
-            <input type="date" name="date_to" class="form-control" value="{{ request('date_to') }}">
+            <label class="form-label fs-13 text-muted">From / To Dates</label>
+            <div class="input-group input-group-sm">
+                <input type="date" name="date_from" class="form-control" value="{{ $dateFrom }}">
+                <input type="date" name="date_to" class="form-control" value="{{ $dateTo }}">
+            </div>
         </div>
         <div class="col-md-2 d-flex align-items-end gap-2">
             <button type="submit" class="btn btn-primary w-100">Filter</button>
-            <a href="{{ route('reports.invoices') }}" class="btn btn-light border"><i class="fa-solid fa-rotate-right"></i></a>
+            <a href="{{ route('reports.invoices') }}" class="btn btn-light border" title="Reset Filters"><i class="fa-solid fa-rotate-right"></i></a>
         </div>
     </form>
 </div>

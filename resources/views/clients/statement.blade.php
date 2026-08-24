@@ -10,6 +10,9 @@
         <h4 class="fw-bold mt-2">Account Statement</h4>
     </div>
     <div class="d-flex gap-2">
+        <a href="{{ route('clients.statement_pdf', [$statement['client'], 'start_date' => $statement['startDate'], 'end_date' => $statement['endDate']]) }}" class="btn btn-outline-danger">
+            <i class="fa-solid fa-file-pdf me-1"></i> Download PDF
+        </a>
         <button onclick="window.print();" class="btn btn-outline-secondary"><i class="fa-solid fa-print me-1"></i> Print Statement</button>
     </div>
 </div>

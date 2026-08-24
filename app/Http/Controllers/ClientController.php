@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
 use App\Models\Client;
+use App\Models\CompanySetting;
 use App\Services\ClientStatementService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ClientController extends Controller
 {
@@ -151,5 +154,22 @@ class ClientController extends Controller
         $statement = $statementService->generateStatement($client, $startDate, $endDate);
 
         return view('clients.statement', compact('statement'));
+    }
+
+    public function downloadStatementPdf(Client $client, Request $request, ClientStatementService $statementService)
+    {
+        $startDate = $request->get('start_date', now()->startOfYear()->format('Y-m-d'));
+        $endDate = $request->get('end_date', now()->format('Y-m-d'));
+
+        $statement = $statementService->generateStatement($client, $startDate, $endDate);
+        $company = CompanySetting::getSettings();
+
+        $pdf = Pdf::loadView('pdf.statement', compact('statement', 'company'));
+        $pdf->setPaper('A4', 'portrait');
+
+        $slugName = Str::slug($client->company_name);
+        $fileName = "Statement_{$slugName}_{$startDate}_to_{$endDate}.pdf";
+
+        return $pdf->download($fileName);
     }
 }

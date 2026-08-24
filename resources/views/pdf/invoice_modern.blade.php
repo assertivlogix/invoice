@@ -31,19 +31,22 @@
 
 <table class="header-table">
     <tr>
-        <td style="vertical-align: top;">
-            <div class="company-name">{{ $company->company_name }}</div>
-            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
+        <td style="width: 35%; vertical-align: top;">
+            <div class="company-name" style="font-size: 16px; font-weight: bold; color: #2563eb; margin-bottom: 2px;">{{ $company->company_name }}</div>
+            <div style="font-size: 11px; color: #64748b;">
                 {{ $company->address }}<br>
                 {{ $company->city }}, {{ $company->state }} {{ $company->zip_code }} {{ $company->country }}<br>
                 Email: {{ $company->email }} | Phone: {{ $company->phone }}<br>
                 @if($company->tax_number) Tax ID: {{ $company->tax_number }} @endif
             </div>
         </td>
-        <td style="text-align: right; vertical-align: top;">
+        <td style="width: 30%; text-align: center; vertical-align: middle;">
+            <img src="{{ public_path('images/logo.svg') }}" alt="{{ $company->company_name }}" style="max-height: 55px; max-width: 170px;">
+        </td>
+        <td style="width: 35%; text-align: right; vertical-align: top;">
             <div class="invoice-title">INVOICE</div>
             <div class="invoice-number">{{ $invoice->invoice_number }}</div>
-            <div style="font-size: 11px; color: #64748b; margin-top: 6px;">
+            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
                 Date: <strong>{{ $invoice->invoice_date->format('M d, Y') }}</strong><br>
                 Due Date: <strong>{{ $invoice->due_date->format('M d, Y') }}</strong><br>
                 Terms: {{ $invoice->payment_terms }}
@@ -101,7 +104,7 @@
 </table>
 
 <div>
-    @if($company->bank_name)
+    @if($company->bank_name && !$isPaid && $invoice->status !== 'Paid')
     <div class="bank-box">
         <strong>Bank Payment Instructions:</strong><br>
         Bank Name: {{ $company->bank_name }}<br>

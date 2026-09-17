@@ -252,6 +252,11 @@
                     <i class="fa-solid fa-chart-line"></i> Reports
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="{{ route('tracked-plugins.index') }}" class="nav-link {{ request()->routeIs('tracked-plugins*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-plug"></i> Track Plugins
+                </a>
+            </li>
             @if(auth()->user() && auth()->user()->isAdmin())
             <li class="nav-item">
                 <a href="{{ route('settings.index') }}" class="nav-link {{ request()->routeIs('settings*') ? 'active' : '' }}">

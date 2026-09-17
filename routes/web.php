@@ -10,6 +10,7 @@ use App\Http\Controllers\PublicPaymentController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\TrackedPluginController;
 use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Route;
 
@@ -68,6 +69,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports/payments', [ReportController::class, 'payments'])->name('reports.payments');
     Route::get('/reports/revenue', [ReportController::class, 'revenue'])->name('reports.revenue');
     Route::get('/reports/tax', [ReportController::class, 'tax'])->name('reports.tax');
+
+    // Track Plugins Telemetry Dashboard
+    Route::get('/tracked-plugins', [TrackedPluginController::class, 'index'])->name('tracked-plugins.index');
+    Route::delete('/tracked-plugins/{trackedPlugin}', [TrackedPluginController::class, 'destroy'])->name('tracked-plugins.destroy');
 
     // Settings (Protected by Admin Role)
     Route::prefix('settings')->name('settings.')->middleware(['role:admin'])->group(function () {
